@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live ISS Tracker 🌍🛰️</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <header class="header">
+        <h1>🛰️ Live ISS Tracker 🌍</h1>
+        <p class="subtitle">Track the International Space Station in real-time and explore the cosmos</p>
+    </header>
+
+    <div class="container">
+        <section class="iss-section">
+            <h2 class="section-title">
+                <span class="iss-icon">🛰️</span>
+                Current ISS Location
+            </h2>
+            <div id="map"></div>
+            <div class="iss-info">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    Live Tracking Active
+                </div>
+                <div class="iss-coordinates">
+                    <div class="coordinate">
+                        <span class="coordinate-label">Latitude</span>
+                        <span class="coordinate-value" id="lat-value">Loading...</span>
+                    </div>
+                    <div class="coordinate">
+                        <span class="coordinate-label">Longitude</span>
+                        <span class="coordinate-value" id="lon-value">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="apod-section">
+            <h2 class="section-title">
+                <span>🌌</span>
+                NASA Picture of the Day
+            </h2>
+            <img id="apod-img" src="" alt="NASA APOD" style="display: none;">
+            <div id="apod-loading" class="loading" style="margin: 2rem auto;"></div>
+            <h3 id="apod-title"></h3>
+            <p id="apod-desc"></p>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
