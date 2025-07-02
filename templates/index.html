@@ -54,43 +54,13 @@
             </div>
             
             <div class="video-container">
-                <div class="video-wrapper" id="video-wrapper">
-                    <!-- Primary NASA Live Stream -->
-                    <iframe id="iss-video" 
-                            src="https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                    </iframe>
-                </div>
-                
-                <!-- Fallback content -->
-                <div class="video-fallback" id="video-fallback">
-                    <h3>📡 Video Currently Unavailable</h3>
-                    <p>The live stream may be temporarily offline. Try these alternatives:</p>
-                    <div class="fallback-links">
-                        <a href="https://www.nasa.gov/live" target="_blank" class="fallback-link">
-                            🚀 NASA Live - Official Stream
-                        </a>
-                        <a href="https://www.ustream.tv/channel/9408562" target="_blank" class="fallback-link">
-                            🛰️ ISS HD Earth Viewing Experiment
-                        </a>
-                        <a href="https://eol.jsc.nasa.gov/ESRS/" target="_blank" class="fallback-link">
-                            🌍 Earth Science Research from ISS
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="video-info">
-                <div class="video-description">
-                    Live views from the International Space Station as it orbits Earth at ~27,600 km/h. 
-                    During orbital night or technical issues, you may see a blue screen or internal ISS views.
-                </div>
-                
-                <div class="video-controls">
-                    <button class="video-btn" onclick="refreshVideo()">🔄 Refresh Stream</button>
-                    <button class="video-btn" onclick="toggleVideo()">⏸️ Pause/Resume</button>
+                <!-- Placeholder linking to NASA Live site -->
+                <div class="video-placeholder">
+                    <a href="https://www.youtube.com/live/H999s0P1Er0?si=A8Fzab2XYNTh62NW" target="_blank">
+                        <img src="{{ url_for('static', filename='thumb_nasa_live.jpg') }}" alt="Watch NASA Live" class="placeholder-img">
+                        <div class="play-icon">▶️</div>
+                    </a>
+                    <p>Click to watch the live ISS stream on NASA's official site.</p>
                 </div>
             </div>
         </div>

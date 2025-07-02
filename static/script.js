@@ -330,7 +330,8 @@ function refreshVideo() {
     
     if (videoIframe) {
         // Reset to primary source
-        videoIframe.src = "https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0";
+        videoIframe.src = "https://www.youtube.com/embed/H999s0P1Er0?si=3udpqrJ4O8Lik44Yautoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0&enablejsapi=1&origin=http://localhost";
+
         
         // Re-initialize video checking
         isVideoInitialized = false;
