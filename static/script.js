@@ -541,3 +541,164 @@ window.addEventListener('unhandledrejection', function(event) {
 });
 
 console.log('🚀 ISS Tracker script loaded successfully!');
+
+// Moonrise & Moonset Functions
+async function getMoonriseMoonset(lat, lon, locationName = '') {
+    const resultsContainer = {
+        moonrise: document.getElementById('moonrise-time'),
+        moonset: document.getElementById('moonset-time'),
+        location: document.getElementById('moonrise-location'),
+        date: document.getElementById('moonrise-date')
+    };
+
+    try {
+        // Call the new backend endpoint
+        const response = await fetch(`/moonrise-moonset?lat=${lat}&lon=${lon}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch moon data');
+        }
+
+        const data = await response.json();
+
+        resultsContainer.moonrise.textContent = data.moonrise || '--';
+        resultsContainer.moonset.textContent = data.moonset || '--';
+        resultsContainer.location.textContent = locationName || data.location || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        resultsContainer.date.textContent = new Date().toLocaleDateString();
+
+    } catch (error) {
+        console.error('Error fetching moonrise/moonset data:', error);
+        resultsContainer.moonrise.textContent = 'Error';
+        resultsContainer.moonset.textContent = 'Error';
+        resultsContainer.location.textContent = 'Could not load data';
+        resultsContainer.date.textContent = '--';
+    }
+}
+
+// Handle geolocation for moonrise
+function handleMoonriseGeolocation() {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+    }
+
+    // Update button text to show loading
+    const button = document.getElementById('get-moonrise-location');
+    const originalText = button.textContent;
+    button.textContent = 'Getting location...';
+    button.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const { latitude, longitude } = position.coords;
+            getMoonriseMoonset(latitude, longitude, 'Your Location');
+            
+            // Reset button
+            button.textContent = originalText;
+            button.disabled = false;
+        },
+        error => {
+            console.error('Geolocation error:', error);
+            alert('Unable to retrieve your location. Please enter coordinates manually.');
+            
+            // Reset button
+            button.textContent = originalText;
+            button.disabled = false;
+        },
+        {
+            timeout: 10000,
+            enableHighAccuracy: true
+        }
+    );
+}
+
+// Handle manual location input for moonrise
+async function handleMoonriseLocationSubmit() {
+    const locationInput = document.getElementById('moonrise-location-input').value.trim();
+    
+    if (!locationInput) {
+        alert('Please enter a location.');
+        return;
+    }
+
+    // Check if input is coordinates (lat,lon format)
+    const coordsMatch = locationInput.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
+    
+    if (coordsMatch) {
+        const lat = parseFloat(coordsMatch[1]);
+        const lon = parseFloat(coordsMatch[2]);
+        
+        if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+            getMoonriseMoonset(lat, lon, locationInput);
+        } else {
+            alert('Please enter valid coordinates (latitude between -90 and 90, longitude between -180 and 180).');
+        }
+    } else {
+        // Try to geocode the location name
+        try {
+            const geocodeResponse = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(locationInput)}&key=DEMO_KEY&limit=1`);
+            const geocodeData = await geocodeResponse.json();
+            
+            if (geocodeData.results && geocodeData.results.length > 0) {
+                const result = geocodeData.results[0];
+                const lat = result.geometry.lat;
+                const lon = result.geometry.lng;
+                const locationName = result.formatted;
+                
+                getMoonriseMoonset(lat, lon, locationName);
+            } else {
+                alert('Location not found. Please try entering coordinates in the format: latitude, longitude');
+            }
+        } catch (error) {
+            console.error('Geocoding error:', error);
+            alert('Error finding location. Please try entering coordinates in the format: latitude, longitude');
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize moonrise/moonset for default location
+    getMoonriseMoonset(0, 0, 'Default Location');
+    
+    // Setup event listener for manual location form
+    const moonriseForm = document.getElementById('moonrise-location-form');
+    if (moonriseForm) {
+        moonriseForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleMoonriseLocationSubmit();
+        });
+    }
+    
+    // Setup event listener for geolocation button
+    const geoButton = document.getElementById('get-moonrise-location');
+    if (geoButton) {
+        geoButton.addEventListener('click', handleMoonriseGeolocation);
+    }
+    
+    document.getElementById('use-geolocation').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser.');
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+            fetchISSPasses(latitude, longitude).then(displayISSPasses);
+        }, error => {
+            alert('Unable to retrieve your location.');
+            console.error('Geolocation error:', error);
+        });
+    });
+
+    // Moonrise & Moonset event listeners
+    document.getElementById('get-moonrise-location').addEventListener('click', handleMoonriseGeolocation);
+    document.getElementById('moonrise-submit').addEventListener('click', handleMoonriseLocationSubmit);
+    
+    // Allow Enter key to submit moonrise location
+    document.getElementById('moonrise-location-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleMoonriseLocationSubmit();
+        }
+    });
+});

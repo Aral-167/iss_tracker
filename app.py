@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import requests
 import datetime
 import math
@@ -7,6 +7,7 @@ import random
 app = Flask(__name__)
 
 NASA_API_KEY = "DEMO_KEY"
+IPGEOLOCATION_API_KEY = "f103f55601444a148591aa6c49bcf620"  # <-- IMPORTANT: Add your free API key here
 
 # Star database with interesting facts
 STARS_DATABASE = [
@@ -189,6 +190,31 @@ def moon_phase():
 def star_of_the_day():
     star_data = get_star_of_the_day()
     return jsonify(star_data)
+
+@app.route("/moonrise-moonset")
+def moonrise_moonset():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    if not lat or not lon:
+        return jsonify({"error": "Latitude and longitude are required"}), 400
+
+    try:
+        api_url = f"https://api.ipgeolocation.io/astronomy?apiKey={IPGEOLOCATION_API_KEY}&lat={lat}&long={lon}"
+        response = requests.get(api_url)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        data = response.json()
+        
+        moon_data = {
+            "moonrise": data.get("moonrise"),
+            "moonset": data.get("moonset"),
+            "location": data.get("location", {}).get("city", "Unknown"),
+            "date": data.get("date")
+        }
+        return jsonify(moon_data)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching from IPGeolocation API: {e}")
+        return jsonify({"error": "Failed to fetch moon data from external API"}), 500
 
 if __name__ == "__main__":
     app.run(debug=False)

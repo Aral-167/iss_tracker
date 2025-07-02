@@ -57,7 +57,6 @@
                 <!-- Placeholder linking to NASA Live site -->
                 <div class="video-placeholder">
                     <a href="https://www.youtube.com/live/H999s0P1Er0?si=A8Fzab2XYNTh62NW" target="_blank">
-                        <img src="{{ url_for('static', filename='thumb_nasa_live.jpg') }}" alt="Watch NASA Live" class="placeholder-img">
                         <div class="play-icon">▶️</div>
                     </a>
                     <p>Click to watch the live ISS stream on NASA's official site.</p>
@@ -88,6 +87,38 @@
                         <span class="moon-label">Age</span>
                         <span class="moon-value" id="moon-age">Loading...</span>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-box moonrise-section">
+            <h2 class="section-title">
+                <span class="moonrise-icon">🌙</span>
+                Moonrise & Moonset Times
+            </h2>
+            <div class="moonrise-controls">
+                <button id="get-moonrise-location" class="location-btn">Use My Location</button>
+                <div class="location-input-group">
+                    <input type="text" id="moonrise-location-input" placeholder="Enter city name or coordinates">
+                    <button id="moonrise-submit" class="submit-btn">Get Times</button>
+                </div>
+            </div>
+            <div id="moonrise-results" class="moonrise-display">
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Moonrise</span>
+                    <span class="moonrise-value" id="moonrise-time">Click "Use My Location" to get times</span>
+                </div>
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Moonset</span>
+                    <span class="moonrise-value" id="moonset-time">--</span>
+                </div>
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Location</span>
+                    <span class="moonrise-value" id="moonrise-location">--</span>
+                </div>
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Date</span>
+                    <span class="moonrise-value" id="moonrise-date">--</span>
                 </div>
             </div>
         </section>
