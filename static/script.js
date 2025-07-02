@@ -552,180 +552,28 @@ async function getMoonriseMoonset(lat, lon, locationName = '') {
     };
 
     try {
-        // Update location display
-        if (locationName) {
-            resultsContainer.location.textContent = locationName;
-        } else {
-            resultsContainer.location.textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        // Call the new backend endpoint
+        const response = await fetch(`/moonrise-moonset?lat=${lat}&lon=${lon}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch moon data');
         }
 
-        // Get current date
-        const today = new Date();
-        resultsContainer.date.textContent = today.toLocaleDateString();
+        const data = await response.json();
 
-        // Use TimeAndDate.com API or similar for accurate moon times
-        // For now, let's use a more accurate calculation
-        const moonData = calculateAccurateMoonTimes(lat, lon, today);
-        
-        if (moonData.moonrise) {
-            resultsContainer.moonrise.textContent = moonData.moonrise;
-        } else {
-            resultsContainer.moonrise.textContent = 'No moonrise today';
-        }
-        
-        if (moonData.moonset) {
-            resultsContainer.moonset.textContent = moonData.moonset;
-        } else {
-            resultsContainer.moonset.textContent = 'No moonset today';
-        }
+        resultsContainer.moonrise.textContent = data.moonrise || '--';
+        resultsContainer.moonset.textContent = data.moonset || '--';
+        resultsContainer.location.textContent = locationName || data.location || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        resultsContainer.date.textContent = new Date().toLocaleDateString();
 
     } catch (error) {
         console.error('Error fetching moonrise/moonset data:', error);
-        resultsContainer.moonrise.textContent = 'Error loading data';
-        resultsContainer.moonset.textContent = 'Error loading data';
-        resultsContainer.location.textContent = 'Error';
-        resultsContainer.date.textContent = 'Error';
+        resultsContainer.moonrise.textContent = 'Error';
+        resultsContainer.moonset.textContent = 'Error';
+        resultsContainer.location.textContent = 'Could not load data';
+        resultsContainer.date.textContent = '--';
     }
-}
-
-// More accurate moon time calculations
-function calculateAccurateMoonTimes(lat, lon, date) {
-    // Convert to radians
-    const latitudeRad = lat * Math.PI / 180;
-    const longitudeRad = lon * Math.PI / 180;
-    
-    // Julian day calculation
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    
-    // More accurate Julian Day calculation
-    let adjYear, adjMonth;
-    if (month <= 2) {
-        adjYear = year - 1;
-        adjMonth = month + 12;
-    } else {
-        adjYear = year;
-        adjMonth = month;
-    }
-    
-    const b = Math.floor(adjYear / 100);
-    const c = 2 - b + Math.floor(b / 4);
-    
-    const jd = Math.floor(365.25 * (adjYear + 4716)) + Math.floor(30.6001 * (adjMonth + 1)) + day + c - 1524.5;
-    
-    // Days since J2000.0
-    const d = jd - 2451545.0;
-    
-    // More accurate moon position calculation
-    // Mean longitude of moon
-    const L = (218.3164477 + 481267.88123421 * d / 36525) % 360;
-    
-    // Mean elongation of moon
-    const D = (297.8501921 + 445267.1114034 * d / 36525) % 360;
-    
-    // Sun's mean anomaly
-    const M = (357.5291092 + 35999.0502909 * d / 36525) % 360;
-    
-    // Moon's mean anomaly
-    const Mp = (134.9633964 + 477198.8675055 * d / 36525) % 360;
-    
-    // Moon's argument of latitude
-    const F = (93.272095 + 483202.0175233 * d / 36525) % 360;
-    
-    // Convert to radians
-    const LRad = L * Math.PI / 180;
-    const DRad = D * Math.PI / 180;
-    const MRad = M * Math.PI / 180;
-    const MpRad = Mp * Math.PI / 180;
-    const FRad = F * Math.PI / 180;
-    
-    // Calculate lunar longitude with perturbations
-    let longitude = L;
-    longitude += 6.289 * Math.sin(MpRad);
-    longitude += 1.274 * Math.sin(2 * DRad - MpRad);
-    longitude += 0.658 * Math.sin(2 * DRad);
-    longitude += 0.214 * Math.sin(2 * MpRad);
-    longitude += -0.186 * Math.sin(MRad);
-    longitude += -0.059 * Math.sin(2 * DRad - 2 * MpRad);
-    longitude += -0.057 * Math.sin(2 * DRad - MRad - MpRad);
-    longitude += 0.053 * Math.sin(2 * DRad + MpRad);
-    longitude += 0.046 * Math.sin(2 * DRad - MRad);
-    longitude += 0.041 * Math.sin(MpRad - MRad);
-    
-    // Calculate lunar latitude
-    let latitude = 5.128 * Math.sin(FRad);
-    latitude += 0.281 * Math.sin(MpRad + FRad);
-    latitude += 0.278 * Math.sin(MpRad - FRad);
-    latitude += 0.173 * Math.sin(2 * DRad - FRad);
-    
-    const moonLonRad = longitude * Math.PI / 180;
-    const moonLatRad = latitude * Math.PI / 180;
-    
-    // Convert to equatorial coordinates
-    const epsilon = 23.4393 * Math.PI / 180; // Earth's obliquity
-    
-    const x = Math.cos(moonLatRad) * Math.cos(moonLonRad);
-    const yCoord = Math.cos(moonLatRad) * Math.sin(moonLonRad) * Math.cos(epsilon) - Math.sin(moonLatRad) * Math.sin(epsilon);
-    const z = Math.cos(moonLatRad) * Math.sin(moonLonRad) * Math.sin(epsilon) + Math.sin(moonLatRad) * Math.cos(epsilon);
-    
-    const alpha = Math.atan2(yCoord, x); // Right ascension
-    const delta = Math.asin(z); // Declination
-    
-    // Calculate hour angle at rise/set
-    const h0 = -0.833 * Math.PI / 180; // Standard refraction
-    const moonRadius = 0.25 * Math.PI / 180; // Moon's average angular radius
-    const h = h0 - moonRadius;
-    
-    const cosH = (Math.sin(h) - Math.sin(latitudeRad) * Math.sin(delta)) / (Math.cos(latitudeRad) * Math.cos(delta));
-    
-    // Check if moon rises/sets today
-    if (Math.abs(cosH) > 1) {
-        if (cosH > 1) {
-            return { moonrise: 'No moonrise today', moonset: 'No moonset today' };
-        } else {
-            return { moonrise: 'Always visible', moonset: 'Always visible' };
-        }
-    }
-    
-    const H = Math.acos(cosH);
-    
-    // Calculate Greenwich Mean Sidereal Time
-    const T = d / 36525;
-    const gmst = 280.46061837 + 360.98564736629 * d + 0.000387933 * T * T - T * T * T / 38710000;
-    const gmstRad = (gmst % 360) * Math.PI / 180;
-    
-    // Calculate local sidereal time
-    const lst = gmstRad + longitudeRad;
-    
-    // Calculate rise and set times
-    const riseHA = -H;
-    const setHA = H;
-    
-    const riseTime = (alpha - lst - riseHA) * 12 / Math.PI;
-    const setTime = (alpha - lst - setHA) * 12 / Math.PI;
-    
-    // Normalize to 24-hour format
-    const normalizeTime = (t) => {
-        t = t % 24;
-        if (t < 0) t += 24;
-        return t;
-    };
-    
-    const moonriseHours = normalizeTime(riseTime);
-    const moonsetHours = normalizeTime(setTime);
-    
-    // Format times
-    const formatTime = (hours) => {
-        const h = Math.floor(hours);
-        const m = Math.floor((hours - h) * 60);
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-    };
-    
-    return {
-        moonrise: formatTime(moonriseHours),
-        moonset: formatTime(moonsetHours)
-    };
 }
 
 // Handle geolocation for moonrise
