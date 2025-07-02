@@ -39,6 +39,129 @@
                 </div>
             </div>
         </section>
+        
+        <div class="iss-video-section">
+            <h2 class="section-title">
+                <span class="video-icon">📹</span>
+                Live ISS Stream
+            </h2>
+            
+            <div class="video-status">
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    LIVE FROM ISS
+                </div>
+            </div>
+            
+            <div class="video-container">
+                <div class="video-wrapper" id="video-wrapper">
+                    <!-- Primary NASA Live Stream -->
+                    <iframe id="iss-video" 
+                            src="https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                    </iframe>
+                </div>
+                
+                <!-- Fallback content -->
+                <div class="video-fallback" id="video-fallback">
+                    <h3>📡 Video Currently Unavailable</h3>
+                    <p>The live stream may be temporarily offline. Try these alternatives:</p>
+                    <div class="fallback-links">
+                        <a href="https://www.nasa.gov/live" target="_blank" class="fallback-link">
+                            🚀 NASA Live - Official Stream
+                        </a>
+                        <a href="https://www.ustream.tv/channel/9408562" target="_blank" class="fallback-link">
+                            🛰️ ISS HD Earth Viewing Experiment
+                        </a>
+                        <a href="https://eol.jsc.nasa.gov/ESRS/" target="_blank" class="fallback-link">
+                            🌍 Earth Science Research from ISS
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-info">
+                <div class="video-description">
+                    Live views from the International Space Station as it orbits Earth at ~27,600 km/h. 
+                    During orbital night or technical issues, you may see a blue screen or internal ISS views.
+                </div>
+                
+                <div class="video-controls">
+                    <button class="video-btn" onclick="refreshVideo()">🔄 Refresh Stream</button>
+                    <button class="video-btn" onclick="toggleVideo()">⏸️ Pause/Resume</button>
+                </div>
+            </div>
+        </div>
+        
+
+        <section class="moon-section">
+            <h2 class="section-title">
+                <span class="moon-icon">🌙</span>
+                Current Moon Phase
+            </h2>
+            <div class="moon-display">
+                <div class="moon-visual">
+                    <div id="moon-phase" class="moon-phase"></div>
+                </div>
+                <div class="moon-info">
+                    <div class="moon-detail">
+                        <span class="moon-label">Phase</span>
+                        <span class="moon-value" id="moon-phase-name">Loading...</span>
+                    </div>
+                    <div class="moon-detail">
+                        <span class="moon-label">Illumination</span>
+                        <span class="moon-value" id="moon-illumination">Loading...</span>
+                    </div>
+                    <div class="moon-detail">
+                        <span class="moon-label">Age</span>
+                        <span class="moon-value" id="moon-age">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="star-section">
+            <h2 class="section-title">
+                <span class="star-icon">⭐</span>
+                Star of the Day
+            </h2>
+            <div class="star-display">
+                <div class="star-constellation">
+                    <div class="star-visual" id="star-visual">✦</div>
+                </div>
+                <div class="star-info">
+                    <div class="star-detail">
+                        <span class="star-label">Name</span>
+                        <span class="star-value" id="star-name">Loading...</span>
+                    </div>
+                    <div class="star-detail">
+                        <span class="star-label">Constellation</span>
+                        <span class="star-value" id="star-constellation">Loading...</span>
+                    </div>
+                    <div class="star-detail">
+                        <span class="star-label">Distance</span>
+                        <span class="star-value" id="star-distance">Loading...</span>
+                    </div>
+                    <div class="star-detail">
+                        <span class="star-label">Magnitude</span>
+                        <span class="star-value" id="star-magnitude">Loading...</span>
+                    </div>
+                    <div class="star-detail">
+                        <span class="star-label">Temperature</span>
+                        <span class="star-value" id="star-temperature">Loading...</span>
+                    </div>
+                    <div class="star-detail">
+                        <span class="star-label">Spectral Type</span>
+                        <span class="star-value" id="star-spectral">Loading...</span>
+                    </div>
+                    <div class="star-description" id="star-description">
+                        Loading stellar information...
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section class="apod-section">
             <h2 class="section-title">

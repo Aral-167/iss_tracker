@@ -37,14 +37,18 @@ const issIcon = L.divIcon({
 
 let marker = L.marker([0, 0], { icon: issIcon }).addTo(map);
 
-// Add ISS orbital path (simplified)
+// Add ISS orbital path tracking variables
 let orbitPath = [];
 let orbitPolyline;
-
-// Track ISS position history
 let positionHistory = [];
 const maxHistoryPoints = 20;
 
+// Video management variables
+let videoIframe = null;
+let videoPaused = false;
+let isVideoInitialized = false;
+
+// ISS Position Update Function
 async function updateISS() {
     try {
         const res = await fetch('/iss');
@@ -97,6 +101,7 @@ async function updateISS() {
     }
 }
 
+// Load NASA Astronomy Picture of the Day
 async function loadAPOD() {
     try {
         const loadingElement = document.getElementById('apod-loading');
@@ -104,7 +109,7 @@ async function loadAPOD() {
         const titleElement = document.getElementById('apod-title');
         const descElement = document.getElementById('apod-desc');
         
-        loadingElement.style.display = 'block';
+        if (loadingElement) loadingElement.style.display = 'block';
         
         const res = await fetch('/apod');
         const data = await res.json();
@@ -116,17 +121,17 @@ async function loadAPOD() {
             
             // Hide loading spinner when image loads
             imgElement.onload = () => {
-                loadingElement.style.display = 'none';
+                if (loadingElement) loadingElement.style.display = 'none';
             };
             
             imgElement.onerror = () => {
-                loadingElement.style.display = 'none';
+                if (loadingElement) loadingElement.style.display = 'none';
                 imgElement.style.display = 'none';
                 titleElement.textContent = 'Unable to load image';
             };
         } else {
             // Handle video or other media types
-            loadingElement.style.display = 'none';
+            if (loadingElement) loadingElement.style.display = 'none';
             imgElement.style.display = 'none';
         }
         
@@ -135,49 +140,403 @@ async function loadAPOD() {
         
     } catch (error) {
         console.error('Error loading APOD:', error);
-        document.getElementById('apod-loading').style.display = 'none';
+        const loadingElement = document.getElementById('apod-loading');
+        if (loadingElement) loadingElement.style.display = 'none';
         document.getElementById('apod-title').textContent = 'Unable to load NASA Picture of the Day';
         document.getElementById('apod-desc').textContent = 'Please check your internet connection and try again.';
     }
 }
 
-// Add click handler for APOD image to view full size
-document.addEventListener('DOMContentLoaded', function() {
-    const apodImg = document.getElementById('apod-img');
+// Update Moon Phase Information
+async function updateMoonPhase() {
+    try {
+        const res = await fetch('/moon');
+        const data = await res.json();
+        
+        // Update moon phase display
+        const moonPhaseElement = document.getElementById('moon-phase');
+        const moonPhaseNameElement = document.getElementById('moon-phase-name');
+        const moonIlluminationElement = document.getElementById('moon-illumination');
+        const moonAgeElement = document.getElementById('moon-age');
+        
+        if (moonPhaseElement) {
+            // Set moon phase class for visual representation
+            moonPhaseElement.className = `moon-phase ${data.phase_class}`;
+        }
+        
+        // Update text information
+        if (moonPhaseNameElement) moonPhaseNameElement.textContent = data.phase_name;
+        if (moonIlluminationElement) moonIlluminationElement.textContent = `${data.illumination}%`;
+        if (moonAgeElement) moonAgeElement.textContent = `${data.age} days`;
+        
+    } catch (error) {
+        console.error('Error updating moon phase:', error);
+        const moonPhaseNameElement = document.getElementById('moon-phase-name');
+        const moonIlluminationElement = document.getElementById('moon-illumination');
+        const moonAgeElement = document.getElementById('moon-age');
+        
+        if (moonPhaseNameElement) moonPhaseNameElement.textContent = 'Error';
+        if (moonIlluminationElement) moonIlluminationElement.textContent = 'Error';
+        if (moonAgeElement) moonAgeElement.textContent = 'Error';
+    }
+}
+
+// Load Star of the Day Information
+async function loadStarOfTheDay() {
+    try {
+        const res = await fetch('/star_of_the_day');
+        const data = await res.json();
+        
+        // Update star information
+        const starNameElement = document.getElementById('star-name');
+        const starConstellationElement = document.getElementById('star-constellation');
+        const starDistanceElement = document.getElementById('star-distance');
+        const starMagnitudeElement = document.getElementById('star-magnitude');
+        const starTemperatureElement = document.getElementById('star-temperature');
+        const starSpectralElement = document.getElementById('star-spectral');
+        const starDescriptionElement = document.getElementById('star-description');
+        
+        if (starNameElement) starNameElement.textContent = data.name;
+        if (starConstellationElement) starConstellationElement.textContent = data.constellation;
+        if (starDistanceElement) starDistanceElement.textContent = data.distance;
+        if (starMagnitudeElement) starMagnitudeElement.textContent = data.magnitude;
+        if (starTemperatureElement) starTemperatureElement.textContent = data.temperature;
+        if (starSpectralElement) starSpectralElement.textContent = data.spectral_type;
+        if (starDescriptionElement) starDescriptionElement.textContent = data.description;
+        
+        // Add spectral type indicator
+        if (starSpectralElement && !starSpectralElement.parentNode.querySelector('.star-type')) {
+            const spectralType = data.spectral_type.charAt(0);
+            const spectralClass = document.createElement('span');
+            spectralClass.className = 'star-type';
+            spectralClass.textContent = `Class ${spectralType}`;
+            starSpectralElement.parentNode.appendChild(spectralClass);
+        }
+        
+        // Animate star visual based on spectral type
+        const starVisual = document.getElementById('star-visual');
+        if (starVisual) {
+            const spectralType = data.spectral_type.charAt(0);
+            switch(spectralType) {
+                case 'O':
+                case 'B':
+                    starVisual.style.color = '#9bb0ff';
+                    break;
+                case 'A':
+                    starVisual.style.color = '#aabfff';
+                    break;
+                case 'F':
+                    starVisual.style.color = '#cad7ff';
+                    break;
+                case 'G':
+                    starVisual.style.color = '#fff4ea';
+                    break;
+                case 'K':
+                    starVisual.style.color = '#ffd2a1';
+                    break;
+                case 'M':
+                    starVisual.style.color = '#ffad51';
+                    break;
+                default:
+                    starVisual.style.color = '#ffd700';
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading Star of the Day:', error);
+        const starNameElement = document.getElementById('star-name');
+        const starConstellationElement = document.getElementById('star-constellation');
+        const starDescriptionElement = document.getElementById('star-description');
+        
+        if (starNameElement) starNameElement.textContent = 'Unable to load';
+        if (starConstellationElement) starConstellationElement.textContent = 'star information';
+        if (starDescriptionElement) starDescriptionElement.textContent = 'Please check your internet connection and try again.';
+    }
+}
+
+// Video Management Functions
+function initializeVideo() {
+    if (isVideoInitialized) return;
     
-    apodImg.addEventListener('click', function() {
-        if (this.src) {
-            window.open(this.src, '_blank');
+    videoIframe = document.getElementById('iss-video');
+    const videoWrapper = document.getElementById('video-wrapper');
+    const videoFallback = document.getElementById('video-fallback');
+    
+    if (!videoIframe) return;
+    
+    isVideoInitialized = true;
+    
+    // Alternative video sources to try
+    const videoSources = [
+        "https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0",
+        "https://www.youtube.com/embed/XBPjVzSoepo?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0",
+        "https://www.youtube.com/embed/4993sBLAzGA?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0"
+    ];
+    
+    let currentSourceIndex = 0;
+    
+    // Try alternative sources if primary fails
+    function tryNextSource() {
+        currentSourceIndex++;
+        if (currentSourceIndex < videoSources.length) {
+            videoIframe.src = videoSources[currentSourceIndex];
+            setTimeout(() => {
+                // If still not working after 5 seconds, try next source
+                try {
+                    if (videoIframe.contentDocument === null) {
+                        tryNextSource();
+                    }
+                } catch (e) {
+                    tryNextSource();
+                }
+            }, 5000);
+        } else {
+            showVideoFallback();
+        }
+    }
+    
+    // Show fallback if all sources fail
+    setTimeout(() => {
+        try {
+            // Test if iframe is accessible (will throw error if blocked)
+            if (videoIframe.contentDocument === null) {
+                tryNextSource();
+            }
+        } catch (e) {
+            tryNextSource();
+        }
+    }, 3000);
+    
+    // Check for video load errors
+    videoIframe.addEventListener('error', function() {
+        showVideoFallback();
+    });
+}
+
+function showVideoFallback() {
+    const videoWrapper = document.getElementById('video-wrapper');
+    const videoFallback = document.getElementById('video-fallback');
+    
+    if (videoWrapper) videoWrapper.style.display = 'none';
+    if (videoFallback) videoFallback.classList.add('show');
+}
+
+function refreshVideo() {
+    const videoWrapper = document.getElementById('video-wrapper');
+    const videoFallback = document.getElementById('video-fallback');
+    
+    if (videoWrapper) videoWrapper.style.display = 'block';
+    if (videoFallback) videoFallback.classList.remove('show');
+    
+    if (videoIframe) {
+        // Reset to primary source
+        videoIframe.src = "https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&showinfo=0";
+        
+        // Re-initialize video checking
+        isVideoInitialized = false;
+        setTimeout(initializeVideo, 1000);
+    }
+}
+
+function toggleVideo() {
+    if (!videoIframe) return;
+    
+    const toggleButton = document.querySelector('[onclick="toggleVideo()"]');
+    
+    if (videoPaused) {
+        videoIframe.style.display = 'block';
+        videoPaused = false;
+        if (toggleButton) toggleButton.innerHTML = '⏸️ Pause';
+    } else {
+        videoIframe.style.display = 'none';
+        videoPaused = true;
+        if (toggleButton) toggleButton.innerHTML = '▶️ Resume';
+    }
+}
+
+// Keyboard Shortcuts
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'r' || e.key === 'R') {
+            updateISS();
+        }
+        if (e.key === 'f' || e.key === 'F') {
+            if (marker) {
+                map.setView(marker.getLatLng(), 4);
+            }
+        }
+        if (e.key === 'v' || e.key === 'V') {
+            toggleVideo();
+        }
+        if (e.key === 'Escape') {
+            // Exit fullscreen if active
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        }
+    });
+}
+
+// Map Event Listeners
+function setupMapEventListeners() {
+    map.on('zoomend', function() {
+        const zoom = map.getZoom();
+        // Adjust marker size based on zoom level
+        const size = Math.max(20, Math.min(40, zoom * 5));
+        // This would require recreating the marker, keeping it simple for now
+    });
+    
+    // Add click event to center on ISS
+    map.on('click', function(e) {
+        if (marker) {
+            map.setView(marker.getLatLng(), map.getZoom());
+        }
+    });
+}
+
+// Video Control Event Listeners
+function setupVideoControls() {
+    const toggleBtn = document.getElementById('toggle-video');
+    const fullscreenBtn = document.getElementById('fullscreen-video');
+    const videoWrapper = document.querySelector('.video-wrapper');
+    const iframe = document.getElementById('iss-video');
+    
+    if (!toggleBtn || !fullscreenBtn || !videoWrapper || !iframe) return;
+    
+    let isPlaying = true;
+    let originalSrc = iframe.src;
+    
+    // Toggle video play/pause
+    toggleBtn.addEventListener('click', function() {
+        if (isPlaying) {
+            iframe.src = '';
+            toggleBtn.textContent = '▶️ Resume Video';
+            isPlaying = false;
+        } else {
+            iframe.src = originalSrc;
+            toggleBtn.textContent = '⏸️ Pause Video';
+            isPlaying = true;
         }
     });
     
-    // Add tooltip
-    apodImg.title = 'Click to view full size image';
-});
-
-// Initialize the app
-loadAPOD();
-updateISS(); // Initial call
-setInterval(updateISS, 5000); // Update every 5 seconds
-
-// Add keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'r' || e.key === 'R') {
-        updateISS();
-    }
-    if (e.key === 'f' || e.key === 'F') {
-        if (marker) {
-            map.setView(marker.getLatLng(), 4);
+    // Fullscreen functionality
+    fullscreenBtn.addEventListener('click', function() {
+        if (videoWrapper.requestFullscreen) {
+            videoWrapper.requestFullscreen();
+        } else if (videoWrapper.webkitRequestFullscreen) {
+            videoWrapper.webkitRequestFullscreen();
+        } else if (videoWrapper.msRequestFullscreen) {
+            videoWrapper.msRequestFullscreen();
+        }
+    });
+    
+    // Handle fullscreen changes
+    function handleFullscreenChange() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+            fullscreenBtn.textContent = '🗗 Exit Fullscreen';
+        } else {
+            fullscreenBtn.textContent = '🗖 Fullscreen';
         }
     }
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+}
+
+// APOD Image Click Handler
+function setupAPODImageHandler() {
+    const apodImg = document.getElementById('apod-img');
+    
+    if (apodImg) {
+        apodImg.addEventListener('click', function() {
+            if (this.src) {
+                window.open(this.src, '_blank');
+            }
+        });
+        
+        // Add tooltip
+        apodImg.title = 'Click to view full size image';
+    }
+}
+
+// Status Updates
+function updateStatus() {
+    const statusElements = document.querySelectorAll('.status-indicator');
+    statusElements.forEach(element => {
+        element.style.display = 'flex';
+    });
+}
+
+// Initialize Application
+function initializeApp() {
+    console.log('🛰️ Initializing ISS Tracker...');
+    
+    // Load initial data
+    updateISS();
+    loadAPOD();
+    updateMoonPhase();
+    loadStarOfTheDay();
+    
+    // Setup event listeners
+    setupKeyboardShortcuts();
+    setupMapEventListeners();
+    setupAPODImageHandler();
+    
+    // Initialize video after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        initializeVideo();
+        setupVideoControls();
+    }, 1000);
+    
+    // Update status
+    updateStatus();
+    
+    // Set up intervals for automatic updates
+    setInterval(updateISS, 5000); // Update ISS position every 5 seconds
+    setInterval(updateMoonPhase, 3600000); // Update moon phase every hour
+    
+    console.log('✅ ISS Tracker initialized successfully!');
+    console.log('🎮 Keyboard shortcuts:');
+    console.log('   R - Refresh ISS position');
+    console.log('   F - Focus on ISS location');
+    console.log('   V - Toggle video play/pause');
+    console.log('   ESC - Exit fullscreen');
+}
+
+// Global functions for HTML onclick events
+window.refreshVideo = refreshVideo;
+window.toggleVideo = toggleVideo;
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure all elements are rendered
+    setTimeout(initializeApp, 500);
 });
 
-// Add map event listeners for better UX
-map.on('zoomend', function() {
-    const zoom = map.getZoom();
-    // Adjust marker size based on zoom level
-    const size = Math.max(20, Math.min(40, zoom * 5));
-    // This would require recreating the marker, keeping it simple for now
+// Handle page visibility changes to pause/resume updates
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('🌙 Page hidden, pausing updates...');
+    } else {
+        console.log('🌞 Page visible, resuming updates...');
+        updateISS(); // Refresh ISS position when page becomes visible
+    }
 });
 
-console.log('🛰️ ISS Tracker initialized! Press "R" to refresh ISS position, "F" to focus on ISS');
+// Handle window resize for responsive map
+window.addEventListener('resize', function() {
+    if (map) {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+    }
+});
+
+// Error handling for unhandled promises
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('🚨 Unhandled promise rejection:', event.reason);
+    event.preventDefault();
+});
+
+console.log('🚀 ISS Tracker script loaded successfully!');
