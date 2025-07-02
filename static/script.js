@@ -541,3 +541,316 @@ window.addEventListener('unhandledrejection', function(event) {
 });
 
 console.log('🚀 ISS Tracker script loaded successfully!');
+
+// Moonrise & Moonset Functions
+async function getMoonriseMoonset(lat, lon, locationName = '') {
+    const resultsContainer = {
+        moonrise: document.getElementById('moonrise-time'),
+        moonset: document.getElementById('moonset-time'),
+        location: document.getElementById('moonrise-location'),
+        date: document.getElementById('moonrise-date')
+    };
+
+    try {
+        // Update location display
+        if (locationName) {
+            resultsContainer.location.textContent = locationName;
+        } else {
+            resultsContainer.location.textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        }
+
+        // Get current date
+        const today = new Date();
+        resultsContainer.date.textContent = today.toLocaleDateString();
+
+        // Use TimeAndDate.com API or similar for accurate moon times
+        // For now, let's use a more accurate calculation
+        const moonData = calculateAccurateMoonTimes(lat, lon, today);
+        
+        if (moonData.moonrise) {
+            resultsContainer.moonrise.textContent = moonData.moonrise;
+        } else {
+            resultsContainer.moonrise.textContent = 'No moonrise today';
+        }
+        
+        if (moonData.moonset) {
+            resultsContainer.moonset.textContent = moonData.moonset;
+        } else {
+            resultsContainer.moonset.textContent = 'No moonset today';
+        }
+
+    } catch (error) {
+        console.error('Error fetching moonrise/moonset data:', error);
+        resultsContainer.moonrise.textContent = 'Error loading data';
+        resultsContainer.moonset.textContent = 'Error loading data';
+        resultsContainer.location.textContent = 'Error';
+        resultsContainer.date.textContent = 'Error';
+    }
+}
+
+// More accurate moon time calculations
+function calculateAccurateMoonTimes(lat, lon, date) {
+    // Convert to radians
+    const latitudeRad = lat * Math.PI / 180;
+    const longitudeRad = lon * Math.PI / 180;
+    
+    // Julian day calculation
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    // More accurate Julian Day calculation
+    let adjYear, adjMonth;
+    if (month <= 2) {
+        adjYear = year - 1;
+        adjMonth = month + 12;
+    } else {
+        adjYear = year;
+        adjMonth = month;
+    }
+    
+    const b = Math.floor(adjYear / 100);
+    const c = 2 - b + Math.floor(b / 4);
+    
+    const jd = Math.floor(365.25 * (adjYear + 4716)) + Math.floor(30.6001 * (adjMonth + 1)) + day + c - 1524.5;
+    
+    // Days since J2000.0
+    const d = jd - 2451545.0;
+    
+    // More accurate moon position calculation
+    // Mean longitude of moon
+    const L = (218.3164477 + 481267.88123421 * d / 36525) % 360;
+    
+    // Mean elongation of moon
+    const D = (297.8501921 + 445267.1114034 * d / 36525) % 360;
+    
+    // Sun's mean anomaly
+    const M = (357.5291092 + 35999.0502909 * d / 36525) % 360;
+    
+    // Moon's mean anomaly
+    const Mp = (134.9633964 + 477198.8675055 * d / 36525) % 360;
+    
+    // Moon's argument of latitude
+    const F = (93.272095 + 483202.0175233 * d / 36525) % 360;
+    
+    // Convert to radians
+    const LRad = L * Math.PI / 180;
+    const DRad = D * Math.PI / 180;
+    const MRad = M * Math.PI / 180;
+    const MpRad = Mp * Math.PI / 180;
+    const FRad = F * Math.PI / 180;
+    
+    // Calculate lunar longitude with perturbations
+    let longitude = L;
+    longitude += 6.289 * Math.sin(MpRad);
+    longitude += 1.274 * Math.sin(2 * DRad - MpRad);
+    longitude += 0.658 * Math.sin(2 * DRad);
+    longitude += 0.214 * Math.sin(2 * MpRad);
+    longitude += -0.186 * Math.sin(MRad);
+    longitude += -0.059 * Math.sin(2 * DRad - 2 * MpRad);
+    longitude += -0.057 * Math.sin(2 * DRad - MRad - MpRad);
+    longitude += 0.053 * Math.sin(2 * DRad + MpRad);
+    longitude += 0.046 * Math.sin(2 * DRad - MRad);
+    longitude += 0.041 * Math.sin(MpRad - MRad);
+    
+    // Calculate lunar latitude
+    let latitude = 5.128 * Math.sin(FRad);
+    latitude += 0.281 * Math.sin(MpRad + FRad);
+    latitude += 0.278 * Math.sin(MpRad - FRad);
+    latitude += 0.173 * Math.sin(2 * DRad - FRad);
+    
+    const moonLonRad = longitude * Math.PI / 180;
+    const moonLatRad = latitude * Math.PI / 180;
+    
+    // Convert to equatorial coordinates
+    const epsilon = 23.4393 * Math.PI / 180; // Earth's obliquity
+    
+    const x = Math.cos(moonLatRad) * Math.cos(moonLonRad);
+    const yCoord = Math.cos(moonLatRad) * Math.sin(moonLonRad) * Math.cos(epsilon) - Math.sin(moonLatRad) * Math.sin(epsilon);
+    const z = Math.cos(moonLatRad) * Math.sin(moonLonRad) * Math.sin(epsilon) + Math.sin(moonLatRad) * Math.cos(epsilon);
+    
+    const alpha = Math.atan2(yCoord, x); // Right ascension
+    const delta = Math.asin(z); // Declination
+    
+    // Calculate hour angle at rise/set
+    const h0 = -0.833 * Math.PI / 180; // Standard refraction
+    const moonRadius = 0.25 * Math.PI / 180; // Moon's average angular radius
+    const h = h0 - moonRadius;
+    
+    const cosH = (Math.sin(h) - Math.sin(latitudeRad) * Math.sin(delta)) / (Math.cos(latitudeRad) * Math.cos(delta));
+    
+    // Check if moon rises/sets today
+    if (Math.abs(cosH) > 1) {
+        if (cosH > 1) {
+            return { moonrise: 'No moonrise today', moonset: 'No moonset today' };
+        } else {
+            return { moonrise: 'Always visible', moonset: 'Always visible' };
+        }
+    }
+    
+    const H = Math.acos(cosH);
+    
+    // Calculate Greenwich Mean Sidereal Time
+    const T = d / 36525;
+    const gmst = 280.46061837 + 360.98564736629 * d + 0.000387933 * T * T - T * T * T / 38710000;
+    const gmstRad = (gmst % 360) * Math.PI / 180;
+    
+    // Calculate local sidereal time
+    const lst = gmstRad + longitudeRad;
+    
+    // Calculate rise and set times
+    const riseHA = -H;
+    const setHA = H;
+    
+    const riseTime = (alpha - lst - riseHA) * 12 / Math.PI;
+    const setTime = (alpha - lst - setHA) * 12 / Math.PI;
+    
+    // Normalize to 24-hour format
+    const normalizeTime = (t) => {
+        t = t % 24;
+        if (t < 0) t += 24;
+        return t;
+    };
+    
+    const moonriseHours = normalizeTime(riseTime);
+    const moonsetHours = normalizeTime(setTime);
+    
+    // Format times
+    const formatTime = (hours) => {
+        const h = Math.floor(hours);
+        const m = Math.floor((hours - h) * 60);
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    };
+    
+    return {
+        moonrise: formatTime(moonriseHours),
+        moonset: formatTime(moonsetHours)
+    };
+}
+
+// Handle geolocation for moonrise
+function handleMoonriseGeolocation() {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+    }
+
+    // Update button text to show loading
+    const button = document.getElementById('get-moonrise-location');
+    const originalText = button.textContent;
+    button.textContent = 'Getting location...';
+    button.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const { latitude, longitude } = position.coords;
+            getMoonriseMoonset(latitude, longitude, 'Your Location');
+            
+            // Reset button
+            button.textContent = originalText;
+            button.disabled = false;
+        },
+        error => {
+            console.error('Geolocation error:', error);
+            alert('Unable to retrieve your location. Please enter coordinates manually.');
+            
+            // Reset button
+            button.textContent = originalText;
+            button.disabled = false;
+        },
+        {
+            timeout: 10000,
+            enableHighAccuracy: true
+        }
+    );
+}
+
+// Handle manual location input for moonrise
+async function handleMoonriseLocationSubmit() {
+    const locationInput = document.getElementById('moonrise-location-input').value.trim();
+    
+    if (!locationInput) {
+        alert('Please enter a location.');
+        return;
+    }
+
+    // Check if input is coordinates (lat,lon format)
+    const coordsMatch = locationInput.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
+    
+    if (coordsMatch) {
+        const lat = parseFloat(coordsMatch[1]);
+        const lon = parseFloat(coordsMatch[2]);
+        
+        if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+            getMoonriseMoonset(lat, lon, locationInput);
+        } else {
+            alert('Please enter valid coordinates (latitude between -90 and 90, longitude between -180 and 180).');
+        }
+    } else {
+        // Try to geocode the location name
+        try {
+            const geocodeResponse = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(locationInput)}&key=DEMO_KEY&limit=1`);
+            const geocodeData = await geocodeResponse.json();
+            
+            if (geocodeData.results && geocodeData.results.length > 0) {
+                const result = geocodeData.results[0];
+                const lat = result.geometry.lat;
+                const lon = result.geometry.lng;
+                const locationName = result.formatted;
+                
+                getMoonriseMoonset(lat, lon, locationName);
+            } else {
+                alert('Location not found. Please try entering coordinates in the format: latitude, longitude');
+            }
+        } catch (error) {
+            console.error('Geocoding error:', error);
+            alert('Error finding location. Please try entering coordinates in the format: latitude, longitude');
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize moonrise/moonset for default location
+    getMoonriseMoonset(0, 0, 'Default Location');
+    
+    // Setup event listener for manual location form
+    const moonriseForm = document.getElementById('moonrise-location-form');
+    if (moonriseForm) {
+        moonriseForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleMoonriseLocationSubmit();
+        });
+    }
+    
+    // Setup event listener for geolocation button
+    const geoButton = document.getElementById('get-moonrise-location');
+    if (geoButton) {
+        geoButton.addEventListener('click', handleMoonriseGeolocation);
+    }
+    
+    document.getElementById('use-geolocation').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser.');
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+            fetchISSPasses(latitude, longitude).then(displayISSPasses);
+        }, error => {
+            alert('Unable to retrieve your location.');
+            console.error('Geolocation error:', error);
+        });
+    });
+
+    // Moonrise & Moonset event listeners
+    document.getElementById('get-moonrise-location').addEventListener('click', handleMoonriseGeolocation);
+    document.getElementById('moonrise-submit').addEventListener('click', handleMoonriseLocationSubmit);
+    
+    // Allow Enter key to submit moonrise location
+    document.getElementById('moonrise-location-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleMoonriseLocationSubmit();
+        }
+    });
+});
