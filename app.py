@@ -6,7 +6,7 @@ import random
 
 app = Flask(__name__)
 
-NASA_API_KEY = "DEMO_KEY"
+NASA_API_KEY = "FqYoZZNTwSVfehBDjePKQCAYRKfH64ipFA6JbBlH"
 IPGEOLOCATION_API_KEY = "f103f55601444a148591aa6c49bcf620"  # <-- IMPORTANT: Add your free API key here
 
 # Star database with interesting facts
