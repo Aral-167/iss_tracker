@@ -1162,6 +1162,50 @@ h1 {
     font-weight: 500;
 }
 
+/* Mars Weather Section */
+.mars-weather-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mars-weather-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.mars-weather-display {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mars-weather-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border-left: 4px solid #ff4500;
+}
+
+.mars-weather-label {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+.mars-weather-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ff4500;
+}
+
 @media (max-width: 1200px) {
     .container {
         grid-template-columns: 1fr 1fr;

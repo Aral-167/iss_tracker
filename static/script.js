@@ -478,6 +478,7 @@ function initializeApp() {
     loadAPOD();
     updateMoonPhase();
     loadStarOfTheDay();
+    updateMarsWeather();
     
     // Setup event listeners
     setupKeyboardShortcuts();
@@ -503,6 +504,24 @@ function initializeApp() {
     console.log('   F - Focus on ISS location');
     console.log('   V - Toggle video play/pause');
     console.log('   ESC - Exit fullscreen');
+}
+
+// Fetch and update Mars Weather data
+async function updateMarsWeather() {
+    try {
+        const res = await fetch('/mars-weather');
+        const data = await res.json();
+
+        // Update Mars Weather section
+        document.getElementById('mars-sol').textContent = data.sol;
+        document.getElementById('mars-temperature').textContent = `${data.temperature}°C`;
+        document.getElementById('mars-pressure').textContent = `${data.pressure} Pa`;
+    } catch (error) {
+        console.error('Error fetching Mars weather data:', error);
+        document.getElementById('mars-sol').textContent = 'Error loading data';
+        document.getElementById('mars-temperature').textContent = 'Error';
+        document.getElementById('mars-pressure').textContent = 'Error';
+    }
 }
 
 // Global functions for HTML onclick events
