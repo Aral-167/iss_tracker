@@ -72,12 +72,13 @@ h1 {
     padding: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 1.5rem 1rem;
+    grid-template-rows: auto auto auto;
+    gap: 1.5rem; /* Reduce gap between rows */
     align-items: start;
     grid-template-areas: 
         "iss video star"
-        "moon video apod";
+        "moon apod moonrise"
+        "pass astronauts astronauts";
 }
 
 
@@ -188,6 +189,7 @@ h1 {
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: -16rem; /* Move NASA Picture of the Day closer to ISS Live Feed */
 }
 
 .apod-section:hover {
@@ -1048,7 +1050,7 @@ h1 {
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    margin-top: 1rem;
+    margin-top: -1rem;
 }
 
 .moonrise-icon {
