@@ -1,6 +1,7 @@
 # ISS Real-Time Tracker & Space Dashboard
 
 This is a feature-rich, interactive web application that provides real-time tracking of the International Space Station (ISS) and a dashboard of other fascinating astronomical data. The project is built with a Python Flask backend and a vanilla JavaScript frontend.
+Fun fact: This project normally started as a ISS tracker (the name!) but after I decided to add more features to it so now it's an ISS tracker and a site to explore the cosmos.
 
 ## Features
 
@@ -24,3 +25,5 @@ This is a feature-rich, interactive web application that provides real-time trac
     - Open-Notify API (ISS Location)
     - NASA API (APOD, Mars Weather)
     - IPGeolocationAPI (for location-based features)
+ 
+Aral Dogan 2025
