@@ -1206,6 +1206,71 @@ h1 {
     color: #ff4500;
 }
 
+/* Weight on Other Planets Section */
+.weight-section {
+    grid-area: weight;
+}
+
+.weight-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+#user-weight, #weight-unit {
+    padding: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#user-weight:focus, #weight-unit:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+}
+
+.weight-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.planet-weight-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    border-left: 4px solid #00d4ff;
+    transition: all 0.3s ease;
+}
+
+.planet-weight-item:hover {
+    transform: translateY(-5px);
+    background: rgba(0, 212, 255, 0.1);
+}
+
+.planet-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.planet-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.planet-weight {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #00d4ff;
+}
+
 /* Updated Timeline of the Universe Section */
 .timeline-section {
     background: rgba(255, 255, 255, 0.05);

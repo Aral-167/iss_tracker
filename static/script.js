@@ -355,6 +355,46 @@ function toggleVideo() {
     }
 }
 
+// Function to calculate weight on other planets
+function calculatePlanetaryWeights() {
+    const userWeightInput = document.getElementById('user-weight');
+    const unit = document.getElementById('weight-unit').value;
+    const resultsContainer = document.getElementById('weight-results');
+
+    const weight = parseFloat(userWeightInput.value);
+
+    if (isNaN(weight) || weight <= 0) {
+        resultsContainer.innerHTML = '<p style="color: #ff6b6b; grid-column: 1 / -1;">Please enter a valid weight.</p>';
+        return;
+    }
+
+    const planets = [
+        { name: 'Moon', gravity: 0.166, icon: '🌕' },
+        { name: 'Mars', gravity: 0.378, icon: '🪐' },
+        { name: 'Jupiter', gravity: 2.528, icon: '🪐' },
+        { name: 'Venus', gravity: 0.904, icon: '♀️' },
+        { name: 'Mercury', gravity: 0.377, icon: '☿️' },
+        { name: 'Saturn', gravity: 1.065, icon: '🪐' },
+        { name: 'Uranus', gravity: 0.886, icon: '🪐' },
+        { name: 'Neptune', gravity: 1.137, icon: '🪐' },
+        { name: 'Pluto', gravity: 0.063, icon: '' },
+    ];
+
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    planets.forEach(planet => {
+        const planetWeight = (weight * planet.gravity).toFixed(2);
+        const resultItem = document.createElement('div');
+        resultItem.className = 'planet-weight-item';
+        resultItem.innerHTML = `
+            <div class="planet-icon">${planet.icon}</div>
+            <div class="planet-name">${planet.name}</div>
+            <div class="planet-weight">${planetWeight} ${unit}</div>
+        `;
+        resultsContainer.appendChild(resultItem);
+    });
+}
+
 // Keyboard Shortcuts
 function setupKeyboardShortcuts() {
     document.addEventListener('keydown', function(e) {
@@ -472,32 +512,32 @@ function updateStatus() {
 // Initialize Application
 function initializeApp() {
     console.log('🛰️ Initializing ISS Tracker...');
-    
+
     // Load initial data
     updateISS();
     loadAPOD();
     updateMoonPhase();
     loadStarOfTheDay();
     updateMarsWeather();
-    
+
     // Setup event listeners
     setupKeyboardShortcuts();
     setupMapEventListeners();
     setupAPODImageHandler();
-    
+
     // Initialize video after a short delay to ensure DOM is ready
     setTimeout(() => {
         initializeVideo();
         setupVideoControls();
     }, 1000);
-    
+
     // Update status
     updateStatus();
-    
+
     // Set up intervals for automatic updates
     setInterval(updateISS, 5000); // Update ISS position every 5 seconds
     setInterval(updateMoonPhase, 3600000); // Update moon phase every hour
-    
+
     console.log('✅ ISS Tracker initialized successfully!');
     console.log('🎮 Keyboard shortcuts:');
     console.log('   R - Refresh ISS position');
@@ -528,10 +568,21 @@ async function updateMarsWeather() {
 window.refreshVideo = refreshVideo;
 window.toggleVideo = toggleVideo;
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Small delay to ensure all elements are rendered
-    setTimeout(initializeApp, 500);
+// Initial data load when the page is ready
+document.addEventListener('DOMContentLoaded', () => {
+    updateISS();
+    setInterval(updateISS, 5000); // Update every 5 seconds
+    loadAPOD();
+    updateMoonPhase();
+    loadStarOfTheDay();
+    fetchMarsWeather();
+    setupKeyboardShortcuts();
+    setupMapEventListeners();
+
+    const calculateBtn = document.getElementById('calculate-weight-btn');
+    if (calculateBtn) {
+        calculateBtn.addEventListener('click', calculatePlanetaryWeights);
+    }
 });
 
 // Handle page visibility changes to pause/resume updates

@@ -218,6 +218,21 @@
                 </div>
             </div>
         </section>
+
+        <section class="weight-section content-box">
+            <h2 class="section-title">⚖️ Your Weight on Other Planets</h2>
+            <div class="weight-controls">
+                <input type="number" id="user-weight" placeholder="Enter your weight" class="location-btn">
+                <select id="weight-unit" class="location-btn">
+                    <option value="kg">kg</option>
+                    <option value="lbs">lbs</option>
+                </select>
+                <button id="calculate-weight-btn" class="submit-btn">Calculate</button>
+            </div>
+            <div id="weight-results" class="weight-results-grid">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+        </section>
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
