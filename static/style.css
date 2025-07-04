@@ -77,7 +77,7 @@ h1 {
     align-items: start;
     grid-template-areas: 
         "iss video star"
-        "moon apod moonrise"
+        "moon mars moonrise"
         "pass astronauts astronauts";
 }
 
@@ -99,6 +99,10 @@ h1 {
 .star-section {
     grid-area: star;
     margin-left: -0.5rem;
+}
+
+.mars-weather-section {
+    grid-area: mars;
 }
 
 /* ISS Tracker Section */
@@ -1181,7 +1185,7 @@ h1 {
 .mars-weather-display {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: -1rem;
 }
 
 .mars-weather-detail {
@@ -1259,7 +1263,7 @@ h1 {
         grid-template-columns: 1fr 1fr;
         grid-template-areas: 
             "iss video"
-            "moon video"
+            "moon mars"
             "star apod";
         gap: 1.5rem;
         padding: 1rem;
@@ -1273,6 +1277,7 @@ h1 {
             "iss"
             "video"
             "moon"
+            "mars"
             "star"
             "apod";
         gap: 1.5rem;
