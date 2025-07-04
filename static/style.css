@@ -1206,6 +1206,54 @@ h1 {
     color: #ff4500;
 }
 
+/* Updated Timeline of the Universe Section */
+.timeline-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    margin-top: 1rem;
+}
+
+.timeline-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.timeline-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
+    border-left: 4px solid #ff4500;
+    transition: all 0.3s ease;
+}
+
+.timeline-item:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: rgba(255, 69, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(255, 69, 0, 0.1);
+}
+
+.timeline-item h3 {
+    font-size: 0.85rem;
+    color: #ff4500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline-item p {
+    font-size: 1.1rem;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
 @media (max-width: 1200px) {
     .container {
         grid-template-columns: 1fr 1fr;

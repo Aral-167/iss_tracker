@@ -721,3 +721,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Ensure GSAP is loaded before running this script
+if (typeof gsap !== 'undefined') {
+    // Animate timeline events on scroll
+    gsap.utils.toArray('.timeline-event').forEach(event => {
+        gsap.from(event, {
+            scrollTrigger: {
+                trigger: event,
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none none',
+            },
+            opacity: 0,
+            y: 50,
+            duration: 1,
+        });
+    });
+} else {
+    console.error('GSAP library is not loaded. Please include it in your project.');
+}
