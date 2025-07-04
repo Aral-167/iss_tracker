@@ -1254,6 +1254,32 @@ h1 {
     font-weight: 500;
 }
 
+/* Site Footer */
+.site-footer {
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.site-footer p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.site-footer a {
+    color: #00d4ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.site-footer a:hover {
+    color: #ff6b00;
+    text-decoration: underline;
+}
+
 @media (max-width: 1200px) {
     .container {
         grid-template-columns: 1fr 1fr;
