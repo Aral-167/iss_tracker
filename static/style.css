@@ -72,13 +72,13 @@ h1 {
     padding: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 1.5rem; /* Reduce gap between rows */
+    grid-template-rows: auto;
+    gap: 1.5rem;
     align-items: start;
     grid-template-areas: 
         "iss video star"
-        "moon apod moonrise"
-        "pass astronauts astronauts";
+        "moon mars moonrise"
+        "apod timeline timeline";
 }
 
 
@@ -89,7 +89,10 @@ h1 {
 
 .apod-section {
     grid-area: apod;
-    margin-left: -0.5rem;
+}
+
+.iss-video-section {
+    grid-area: video;
 }
 
 .moon-section {
@@ -98,11 +101,21 @@ h1 {
 
 .star-section {
     grid-area: star;
-    margin-left: -0.5rem;
 }
 
-/* ISS Tracker Section */
-.iss-section {
+.mars-weather-section {
+    grid-area: mars;
+}
+
+.moonrise-section {
+    grid-area: moonrise;
+}
+
+.timeline-section {
+    grid-area: timeline;
+}
+
+.content-box {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
     padding: 2rem;
@@ -112,19 +125,12 @@ h1 {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.iss-section:hover {
+.content-box:hover {
     transform: translateY(-5px);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
 }
 
-.section-title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
+/* ISS Tracker Section */
 .iss-icon {
     font-size: 2rem;
     animation: orbit 20s linear infinite;
@@ -180,22 +186,17 @@ h1 {
     color: #00d4ff;
 }
 
-/* APOD Section */
-.apod-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-top: -16rem; /* Move NASA Picture of the Day closer to ISS Live Feed */
+.apod-icon {
+    font-size: 2rem;
+    animation: apodGlow 4s ease-in-out infinite;
 }
 
-.apod-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+@keyframes apodGlow {
+    0%, 100% { filter: brightness(1) drop-shadow(0 0 5px rgba(138, 43, 226, 0.5)); }
+    50% { filter: brightness(1.2) drop-shadow(0 0 15px rgba(138, 43, 226, 0.8)); }
 }
+
+/* APOD Section */
 
 #apod-img {
     width: 100%;
@@ -286,20 +287,6 @@ h1 {
 }
 
 /* Moon Section */
-.moon-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.moon-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-}
 
 .moon-icon {
     font-size: 2rem;
@@ -420,21 +407,6 @@ h1 {
 }
 
 /* Star Section */
-.star-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.star-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-}
-
 .star-icon {
     font-size: 2rem;
     animation: starTwinkle 2s ease-in-out infinite;
@@ -568,19 +540,7 @@ h1 {
 
 /* ISS Video Section */
 .iss-video-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     grid-area: video;
-}
-
-.iss-video-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
 }
 
 .video-icon {
@@ -979,80 +939,7 @@ h1 {
     transform: translateY(0);
 }
 
-/* Astronaut Section */
-.astronaut-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    margin-top: 1rem;
-}
-
-.astronaut-title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    position: relative;
-    display: inline-block;
-}
-
-.astronaut-title::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 4px;
-    bottom: -2px;
-    left: 0;
-    background: linear-gradient(90deg, transparent, #00d4ff, transparent);
-}
-
-.astronaut-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    border-left: 4px solid #00d4ff;
-    transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.astronaut-item:hover {
-    transform: translateY(-3px);
-    background: rgba(0, 212, 255, 0.1);
-}
-
-.astronaut-item .icon {
-    font-size: 2rem;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.astronaut-item .craft {
-    font-size: 0.85rem;
-    color: #00d4ff;
-    font-weight: 500;
-    background: rgba(0, 212, 255, 0.1);
-    padding: 0.2rem 0.5rem;
-    border-radius: 5px;
-}
-
 /* Moonrise & Moonset Section */
-.moonrise-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    margin-top: -1rem;
-}
-
 .moonrise-icon {
     font-size: 1.5rem;
     margin-right: 0.5rem;
@@ -1163,21 +1050,6 @@ h1 {
 }
 
 /* Mars Weather Section */
-.mars-weather-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.mars-weather-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-}
-
 .mars-weather-display {
     display: flex;
     flex-direction: column;
@@ -1192,6 +1064,13 @@ h1 {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     border-left: 4px solid #ff4500;
+    transition: all 0.3s ease;
+}
+
+.mars-weather-detail:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: rgba(255, 69, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(255, 69, 0, 0.1);
 }
 
 .mars-weather-label {
@@ -1208,12 +1087,6 @@ h1 {
 
 /* Updated Timeline of the Universe Section */
 .timeline-section {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     margin-top: 1rem;
 }
 
@@ -1241,7 +1114,7 @@ h1 {
 }
 
 .timeline-item h3 {
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     color: #ff4500;
     font-weight: 600;
     text-transform: uppercase;
@@ -1249,7 +1122,7 @@ h1 {
 }
 
 .timeline-item p {
-    font-size: 1.1rem;
+    font-size: 0.85rem;
     color: #e0e0e0;
     font-weight: 500;
 }
@@ -1259,8 +1132,10 @@ h1 {
         grid-template-columns: 1fr 1fr;
         grid-template-areas: 
             "iss video"
-            "moon video"
-            "star apod";
+            "moon mars"
+            "star moonrise"
+            "apod apod"
+            "timeline timeline";
         gap: 1.5rem;
         padding: 1rem;
     }
@@ -1273,8 +1148,11 @@ h1 {
             "iss"
             "video"
             "moon"
+            "mars"
             "star"
-            "apod";
+            "moonrise"
+            "apod"
+            "timeline";
         gap: 1.5rem;
         padding: 1rem;
     }
@@ -1337,7 +1215,7 @@ h1 {
         padding: 0.5rem;
     }
     
-    .iss-section, .apod-section, .moon-section, .star-section {
+    .iss-section, .apod-section, .moon-section, .star-section, .mars-weather-section, .moonrise-section {
         padding: 1rem;
         border-radius: 15px;
     }

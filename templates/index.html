@@ -16,7 +16,7 @@
     </header>
 
     <div class="container">
-        <section class="iss-section">
+        <section class="iss-section content-box">
             <h2 class="section-title">
                 <span class="iss-icon">🛰️</span>
                 Current ISS Location
@@ -40,7 +40,7 @@
             </div>
         </section>
         
-        <div class="iss-video-section">
+        <div class="iss-video-section content-box">
             <h2 class="section-title">
                 <span class="video-icon">📹</span>
                 Live ISS Stream
@@ -63,67 +63,8 @@
                 </div>
             </div>
         </div>
-        
 
-        <section class="moon-section">
-            <h2 class="section-title">
-                <span class="moon-icon">🌙</span>
-                Current Moon Phase
-            </h2>
-            <div class="moon-display">
-                <div class="moon-visual">
-                    <div id="moon-phase" class="moon-phase"></div>
-                </div>
-                <div class="moon-info">
-                    <div class="moon-detail">
-                        <span class="moon-label">Phase</span>
-                        <span class="moon-value" id="moon-phase-name">Loading...</span>
-                    </div>
-                    <div class="moon-detail">
-                        <span class="moon-label">Illumination</span>
-                        <span class="moon-value" id="moon-illumination">Loading...</span>
-                    </div>
-                    <div class="moon-detail">
-                        <span class="moon-label">Age</span>
-                        <span class="moon-value" id="moon-age">Loading...</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="content-box moonrise-section">
-            <h2 class="section-title">
-                <span class="moonrise-icon">🌙</span>
-                Moonrise & Moonset Times
-            </h2>
-            <div class="moonrise-controls">
-                <button id="get-moonrise-location" class="location-btn">Use My Location</button>
-                <div class="location-input-group">
-                    <input type="text" id="moonrise-location-input" placeholder="Enter city name or coordinates">
-                    <button id="moonrise-submit" class="submit-btn">Get Times</button>
-                </div>
-            </div>
-            <div id="moonrise-results" class="moonrise-display">
-                <div class="moonrise-item">
-                    <span class="moonrise-label">Moonrise</span>
-                    <span class="moonrise-value" id="moonrise-time">Click "Use My Location" to get times</span>
-                </div>
-                <div class="moonrise-item">
-                    <span class="moonrise-label">Moonset</span>
-                    <span class="moonrise-value" id="moonset-time">--</span>
-                </div>
-                <div class="moonrise-item">
-                    <span class="moonrise-label">Location</span>
-                    <span class="moonrise-value" id="moonrise-location">--</span>
-                </div>
-                <div class="moonrise-item">
-                    <span class="moonrise-label">Date</span>
-                    <span class="moonrise-value" id="moonrise-date">--</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="star-section">
+        <section class="star-section content-box">
             <h2 class="section-title">
                 <span class="star-icon">⭐</span>
                 Star of the Day
@@ -164,18 +105,33 @@
             </div>
         </section>
 
-        <section class="apod-section">
+        <section class="moon-section content-box">
             <h2 class="section-title">
-                <span>🌌</span>
-                NASA Picture of the Day
+                <span class="moon-icon">🌙</span>
+                Current Moon Phase
             </h2>
-            <img id="apod-img" src="" alt="NASA APOD" style="display: none;">
-            <div id="apod-loading" class="loading" style="margin: 2rem auto;"></div>
-            <h3 id="apod-title"></h3>
-            <p id="apod-desc"></p>
+            <div class="moon-display">
+                <div class="moon-visual">
+                    <div id="moon-phase" class="moon-phase"></div>
+                </div>
+                <div class="moon-info">
+                    <div class="moon-detail">
+                        <span class="moon-label">Phase</span>
+                        <span class="moon-value" id="moon-phase-name">Loading...</span>
+                    </div>
+                    <div class="moon-detail">
+                        <span class="moon-label">Illumination</span>
+                        <span class="moon-value" id="moon-illumination">Loading...</span>
+                    </div>
+                    <div class="moon-detail">
+                        <span class="moon-label">Age</span>
+                        <span class="moon-value" id="moon-age">Loading...</span>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="mars-weather-section">
+        <section class="mars-weather-section content-box">
             <h2 class="section-title">🔴 NASA Mars Weather Report</h2>
             <div class="mars-weather-display">
                 <div class="mars-weather-detail">
@@ -191,6 +147,49 @@
                     <span class="mars-weather-value" id="mars-pressure">Loading...</span>
                 </div>
             </div>
+        </section>
+
+        <section class="moonrise-section content-box">
+            <h2 class="section-title">
+                <span class="moonrise-icon">🌙</span>
+                Moonrise & Moonset Times
+            </h2>
+            <div class="moonrise-controls">
+                <button id="get-moonrise-location" class="location-btn">Use My Location</button>
+                <div class="location-input-group">
+                    <input type="text" id="moonrise-location-input" placeholder="Enter city name or coordinates">
+                    <button id="moonrise-submit" class="submit-btn">Get Times</button>
+                </div>
+            </div>
+            <div id="moonrise-results" class="moonrise-display">
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Moonrise</span>
+                    <span class="moonrise-value" id="moonrise-time">Click "Use My Location" to get times</span>
+                </div>
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Moonset</span>
+                    <span class="moonrise-value" id="moonset-time">--</span>
+                </div>
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Location</span>
+                    <span class="moonrise-value" id="moonrise-location">--</span>
+                </div>
+                <div class="moonrise-item">
+                    <span class="moonrise-label">Date</span>
+                    <span class="moonrise-value" id="moonrise-date">--</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="apod-section content-box">
+            <h2 class="section-title">
+                <span class="apod-icon">🌌</span>
+                NASA Picture of the Day
+            </h2>
+            <img id="apod-img" src="" alt="NASA APOD" style="display: none;">
+            <div id="apod-loading" class="loading" style="margin: 2rem auto;"></div>
+            <h3 id="apod-title"></h3>
+            <p id="apod-desc"></p>
         </section>
 
         <section class="timeline-section content-box">
